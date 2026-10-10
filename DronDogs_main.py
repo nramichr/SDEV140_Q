@@ -31,6 +31,8 @@ c) there is something in the customer email text box.
 If any of these are not filled in, the program displays an appropriate error message. If they are all
 OK, a message box is displayed thanking the user for placing the order.
 
+/
+
 """
 
 import sys
@@ -127,7 +129,6 @@ class MyMainWindow(QMainWindow):
 		self.ui.Spin_Box__BeefDogs.setValue(0)
 		self.ui.Spin_Box__PorkDogs.setValue(0)
 		self.ui.Spin_Box__TurkeyDogs.setValue(0)
-		self.ui.lineEdit_TotalDogs.clear()
 		self.ui.lineEdit_Subtotal.clear()
 		self.ui.lineEdit_2_Sales_Tax.clear()
 		self.ui.lineEdit_3_Total_cost.clear()
@@ -151,7 +152,6 @@ class MyMainWindow(QMainWindow):
 		num_turkey_dogs: int = self.ui.Spin_Box__TurkeyDogs.value()
 		total_dogs: int = num_beef_dogs + num_pork_dogs + num_turkey_dogs
 
-		self.ui.lineEdit_TotalDogs.setText(str(total_dogs))
 		if total_dogs == 0:
 			self.ui.lineEdit_Subtotal.setText("$0.00")
 			self.ui.lineEdit_2_Sales_Tax.setText("$0.00")
