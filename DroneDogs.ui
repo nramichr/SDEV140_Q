@@ -414,6 +414,22 @@
      <string>I give DronDogs permission to use my location information</string>
     </property>
    </widget>
+    <widget class="QLabel" name="label_author">
+     <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>730</y>
+         <width>265</width>
+         <height>24</height>
+        </rect>
+     </property>
+     <property name="text">
+        <string>by: Christian Ramirez-Flores</string>
+     </property>
+     <property name="alignment">
+        <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

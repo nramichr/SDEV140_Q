@@ -112,6 +112,10 @@ class Ui_DroneDogs(object):
         self.checkBox_permission = QCheckBox(self.centralwidget)
         self.checkBox_permission.setObjectName(u"checkBox_permission")
         self.checkBox_permission.setGeometry(QRect(80, 660, 361, 24))
+        self.label_author = QLabel(self.centralwidget)
+        self.label_author.setObjectName(u"label_author")
+        self.label_author.setGeometry(QRect(300, 730, 265, 24))
+        self.label_author.setAlignment(Qt.AlignmentFlag.AlignCenter)
         DroneDogs.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(DroneDogs)
         self.menubar.setObjectName(u"menubar")
@@ -142,5 +146,6 @@ class Ui_DroneDogs(object):
         self.Pushbutton_CustomerInfor.setText(QCoreApplication.translate("DroneDogs", u"Get Customer Info", None))
         self.Pushbutton_ClearForm.setText(QCoreApplication.translate("DroneDogs", u"Clear Form", None))
         self.checkBox_permission.setText(QCoreApplication.translate("DroneDogs", u"I give DronDogs permission to use my location information", None))
+        self.label_author.setText(QCoreApplication.translate("DroneDogs", u"by: Christian Ramirez-Flores", None))
     # retranslateUi
 
