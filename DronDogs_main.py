@@ -44,14 +44,9 @@ first_name: str = ""
 last_name: str = ""
 email: str = ""
 
-#Prices for the three types of hot dogs
-BEEF_DOG_PRICE: float = 1.99
-PORK_DOG_PRICE: float = 1.99
-TURKEY_DOG_PRICE: float = 1.99
-
-DELIVERY_CHARGE_RATE: float = 0.035
-
+# Constants: these values don't change while the program runs
 SALES_TAX_RATE: float = 0.07
+HOT_DOG_PRICE: float = 1.99
 
 
 customer_list: list = []
@@ -100,83 +95,11 @@ class Mydialog2(QDialog):
 				self.accept()
 				break
 
-	# Displays whether location permission was given
-	def give_permission(self, granted: bool):
-		message = "Permission granted." if granted else "Permission not granted."
-		self.statusBar().showMessage(message)
-
-	def on_clear_form_button_clicked(self):
-		self.ui.Spin_Box__BeefDogs.setValue(0)
-		self.ui.Spin_Box__PorkDogs.setValue(0)
-		self.ui.Spin_Box__TurkeyDogs.setValue(0)
-		self.ui.lineEdit_TotalDogs.clear()
-		self.ui.lineEdit_Subtotal.clear()
-		self.ui.lineEdit_2_Sales_Tax.clear()
-		self.ui.lineEdit_3_Total_cost.clear()
-		self.ui.lineEdit_firstname.clear()
-		self.ui.lineEdit_lastname.clear()
-		self.ui.lineEdit_Email.clear()
-		self.ui.checkBox_permission.setChecked(False)
-
-	def on_customer_dialog_button_clicked(self):
-		dialog = Mydialog2()
-		re_val: int = dialog.exec()
-		if re_val == QDialog.DialogCode.Accepted:
-			self.ui.lineEdit_firstname.setText(first_name)
-			self.ui.lineEdit_lastname.setText(last_name)
-			self.ui.lineEdit_Email.setText(email)
-	
-	# Gets the number of hotdogs user has requested from the spinbox 
-	def calculate_order(self):
-		num_beef_dogs: int = self.ui.Spin_Box__BeefDogs.value()
-		num_pork_dogs: int = self.ui.Spin_Box__PorkDogs.value()
-		num_turkey_dogs: int = self.ui.Spin_Box__TurkeyDogs.value()
-		total_dogs: int = num_beef_dogs + num_pork_dogs + num_turkey_dogs
-
-		if total_dogs <= 0:
-			self.ui.lineEdit_TotalDogs.setText("0")
-			self.ui.lineEdit_Subtotal.setText("$0.00")
-			self.ui.lineEdit_2_Sales_Tax.setText("$0.00")
-			self.ui.lineEdit_3_Total_cost.setText("$0.00")
-			QMessageBox.warning(self, "No Dogs Selected", "Please select at least one hot dog to calculate the order.")
-			return
-
-		# All three hot dog types currently have the same price.
-		subtotal: float = (
-			num_beef_dogs * BEEF_DOG_PRICE
-			+ num_pork_dogs * PORK_DOG_PRICE
-			+ num_turkey_dogs * TURKEY_DOG_PRICE
-		)
-		sales_tax: float = subtotal * SALES_TAX_RATE
-		total_cost: float = subtotal + sales_tax
-
-		self.ui.lineEdit_TotalDogs.setText(str(total_dogs))
-		self.ui.lineEdit_Subtotal.setText(f"${subtotal:.2f}")
-		self.ui.lineEdit_2_Sales_Tax.setText(f"${sales_tax:.2f}")
-		self.ui.lineEdit_3_Total_cost.setText(f"${total_cost:.2f}")
-
-	# This checks to see if the user has granted permission to submit the order. If not, it will show a warning message and return without submitting the order.
-	def submit_order(self):
-		if not self.ui.checkBox_permission.isChecked():
-			QMessageBox.warning(self, "Permission Denied", "You must grant permission to submit the order.")
-			return
-		elif self.ui.lineEdit_3_Total_cost.text() in ("","$0.00"):
-			QMessageBox.warning(self, "No Order", "You must calculate the order before submitting.")
-			return	
-		elif self.ui.lineEdit_Eamil.text() == "":
-			QMessageBox.warning(self, "No Customer Info", "You must select a customer before submitting the order.")
-			return
-		else:
-			QMessageBox.information(self, "DroneDogs", "Thank you for ordering from DroneDogs!")
-			self.statusBar().showMessage("Your order has been submitted!.")
-		
-
 	def load_customer_list(self):
 		self.customer_list.clear()
 		for customer in customer_list:
 			self.customer_list.addItem(f"{customer['first_name']} {customer['last_name']}  ({customer['email']})")
 class MyMainWindow(QMainWindow):
-	TAX_RATE = 0.07
 	def __init__(self):
 		super().__init__()
 		self.ui = DroneDogs_ui.Ui_DroneDogs()
@@ -195,9 +118,7 @@ class MyMainWindow(QMainWindow):
 		self.submit_button.clicked.connect(self.submit_order)
 		self.exit_button.clicked.connect(self.close)
 
-	def on_give_permission_buton_clicked(self):
-		print("Permission granted.")
-
+	# Shows in the status bar whether location permission was given
 	def give_permission(self, granted: bool):
 		message = "Permission granted." if granted else "Permission not granted."
 		self.statusBar().showMessage(message)
@@ -223,14 +144,7 @@ class MyMainWindow(QMainWindow):
 			self.ui.lineEdit_lastname.setText(last_name)
 			self.ui.lineEdit_Email.setText(email)
 
-	def on_calculate_order_clicked(self):
-		a: int = self.ui.Spin_Box__BeefDogs.value()
-		b: int = self.ui.Spin_Box__PorkDogs.value()
-		c: int = self.ui.Spin_Box__TurkeyDogs.value()
-		d: float = (a + b + c) * self.TAX_RATE
-		self.ui.lineEdit_2_Sales_Tax.setText(f"${d:.2f}")
-
-
+	# Gets the number of hot dogs from the spin boxes and works out the order
 	def calculate_order(self):
 		num_beef_dogs: int = self.ui.Spin_Box__BeefDogs.value()
 		num_pork_dogs: int = self.ui.Spin_Box__PorkDogs.value()
@@ -242,30 +156,27 @@ class MyMainWindow(QMainWindow):
 			self.ui.lineEdit_Subtotal.setText("$0.00")
 			self.ui.lineEdit_2_Sales_Tax.setText("$0.00")
 			self.ui.lineEdit_3_Total_cost.setText("$0.00")
-			QMessageBox.warning(
-				self,
-				"No Dogs Selected",
-				"Please select at least one hot dog to calculate the order.",
-			)
+			QMessageBox.warning(self, "No Dogs Selected", "Please select at least one hot dog to calculate the order.")
 			return
 
-		subtotal: float = (
-			num_beef_dogs * BEEF_DOG_PRICE
-			+ num_pork_dogs * PORK_DOG_PRICE
-			+ num_turkey_dogs * TURKEY_DOG_PRICE
-		)
-		sales_tax: float = subtotal * self.TAX_RATE
+		# All hot dogs are the same price, so subtotal is total dogs x price
+		subtotal: float = total_dogs * HOT_DOG_PRICE
+		sales_tax: float = subtotal * SALES_TAX_RATE
 		total_cost: float = subtotal + sales_tax
 
+		# Show the amounts as money with two decimal places
 		self.ui.lineEdit_Subtotal.setText(f"${subtotal:.2f}")
 		self.ui.lineEdit_2_Sales_Tax.setText(f"${sales_tax:.2f}")
 		self.ui.lineEdit_3_Total_cost.setText(f"${total_cost:.2f}")
 		self.statusBar().showMessage("Order calculated")
 
+	# Makes sure the order was calculated
 	def submit_order(self):
-		self.statusBar().showMessage(
-			"Order submission is not configured yet."
-		)
+		if self.ui.lineEdit_3_Total_cost.text() in ("", "$0.00"):
+			QMessageBox.warning(self, "No Order", "You must calculate the order before submitting.")
+		else:
+			QMessageBox.information(self, "DroneDogs", "Thank you for ordering your meal from DroneDogs!")
+			self.statusBar().showMessage("Your order has been submitted!")
 
 
 if __name__ == "__main__":
