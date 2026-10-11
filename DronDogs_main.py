@@ -187,7 +187,7 @@ class MyMainWindow(QMainWindow):
 		self.ui.lineEdit_3_Total_cost.setText(f"${total_cost:.2f}")
 		self.statusBar().showMessage("Order calculated")
 
-	# Makes sure the order was calculated
+	# checks if the permission check box is checked, if there is something in the total cost text box, and if there is something in the customer email text box. If any of these are not filled in, the program displays an appropriate error message. If they are all OK, a message box is displayed thanking the user for placing the order.
 	def submit_order(self):
 		if not self.ui.checkBox_permission.isChecked():
 			QMessageBox.warning(self, "No Permission", "You must give permission for location services before submitting the order.")
