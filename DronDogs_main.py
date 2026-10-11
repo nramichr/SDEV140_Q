@@ -49,12 +49,12 @@ email: str = ""
 SALES_TAX_RATE: float = 0.07
 HOT_DOG_PRICE: float = 1.99
 
-DELIVERY_CHARGE_RATE: float = 0.035
 
 customer_list: list = []
 customer_list.append({"first_name": 'Barney', "last_name": 'Rubble', "email": 'barney.rubble@bedrock.com'})
 customer_list.append({"first_name": 'Fred', "last_name": 'Flintstone', "email": 'fred.flintstone@bedrock.com'})
 
+# Try to load the customer list from a JSON file, if it exists
 try:
 	 with open('customers.json', 'r') as customer_file:
 		 customer_list = json.load(customer_file)
@@ -76,7 +76,8 @@ class Mydialog2(QDialog):
 		self.select_customer_button = self.ui.pushButton_2
 		self.select_customer_button.clicked.connect(self.on_select_customer_button_clicked)
 		self.load_customer_list()
-
+	
+	# Adds the customer typed into the text boxes to the list of customers and saves it to the JSON file
 	def add_customer(self):
 		global customer_list
 		new_customer = {
@@ -85,6 +86,8 @@ class Mydialog2(QDialog):
 			"email": self.email.text()
 		}
 		customer_list.append(new_customer)
+		with open('customers.json', 'w') as customer_file:
+			json.dump(customer_list, customer_file)
 		self.load_customer_list()
 
 	def on_select_customer_button_clicked(self):
@@ -110,6 +113,7 @@ class Mydialog2(QDialog):
 	def give_permission(self, granted: bool):
 		message = "Permission granted." if granted else "Permission not granted."
 		self.statusBar().showMessage(message)
+
 class MyMainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -175,8 +179,7 @@ class MyMainWindow(QMainWindow):
 		# All hot dogs are the same price, so subtotal is total dogs x price
 		subtotal: float = total_dogs * HOT_DOG_PRICE
 		sales_tax: float = subtotal * SALES_TAX_RATE
-		delivery_charge: float = subtotal * DELIVERY_CHARGE_RATE
-		total_cost: float = subtotal + sales_tax + delivery_charge
+		total_cost: float = subtotal + sales_tax
 
 		# Show the amounts as money with two decimal places
 		self.ui.lineEdit_Subtotal.setText(f"${subtotal:.2f}")
