@@ -32,7 +32,7 @@ If any of these are not filled in, the program displays an appropriate error mes
 OK, a message box is displayed thanking the user for placing the order.
 
 """
-
+import json
 import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox
@@ -48,11 +48,17 @@ email: str = ""
 SALES_TAX_RATE: float = 0.07
 HOT_DOG_PRICE: float = 1.99
 
+DELIVERY_CHARGE_RATE: float = 0.035
 
 customer_list: list = []
 customer_list.append({"first_name": 'Barney', "last_name": 'Rubble', "email": 'barney.rubble@bedrock.com'})
 customer_list.append({"first_name": 'Fred', "last_name": 'Flintstone', "email": 'fred.flintstone@bedrock.com'})
 
+try:
+	 with open('customers.json', 'r') as customer_file:
+		 customer_list = json.load(customer_file)
+except FileNotFoundError:
+	print("customers.json file not found. Starting with an empty customer list.")
 class Mydialog2(QDialog):
 	def __init__(self):
 		super().__init__()
@@ -99,6 +105,10 @@ class Mydialog2(QDialog):
 		self.customer_list.clear()
 		for customer in customer_list:
 			self.customer_list.addItem(f"{customer['first_name']} {customer['last_name']}  ({customer['email']})")
+	
+	def give_permission(self, granted: bool):
+		message = "Permission granted." if granted else "Permission not granted."
+		self.statusBar().showMessage(message)
 class MyMainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -117,6 +127,10 @@ class MyMainWindow(QMainWindow):
 		self.calc_button.clicked.connect(self.calculate_order)
 		self.submit_button.clicked.connect(self.submit_order)
 		self.exit_button.clicked.connect(self.close)
+
+		self.ui.lineEdit_firstname.setReadOnly(True)
+		self.ui.lineEdit_lastname.setReadOnly(True)
+		self.ui.lineEdit_Email.setReadOnly(True)
 
 	# Shows in the status bar whether location permission was given
 	def give_permission(self, granted: bool):
@@ -160,7 +174,8 @@ class MyMainWindow(QMainWindow):
 		# All hot dogs are the same price, so subtotal is total dogs x price
 		subtotal: float = total_dogs * HOT_DOG_PRICE
 		sales_tax: float = subtotal * SALES_TAX_RATE
-		total_cost: float = subtotal + sales_tax
+		delivery_charge: float = subtotal * DELIVERY_CHARGE_RATE
+		total_cost: float = subtotal + sales_tax + delivery_charge
 
 		# Show the amounts as money with two decimal places
 		self.ui.lineEdit_Subtotal.setText(f"${subtotal:.2f}")
@@ -170,11 +185,20 @@ class MyMainWindow(QMainWindow):
 
 	# Makes sure the order was calculated
 	def submit_order(self):
-		if self.ui.lineEdit_3_Total_cost.text() in ("", "$0.00"):
+		if not self.ui.checkBox_permission.isChecked():
+			QMessageBox.warning(self, "No Permission", "You must give permission for location services before submitting the order.")
+			return
+		elif self.ui.lineEdit_3_Total_cost.text() in ("", "$0.00"):
 			QMessageBox.warning(self, "No Order", "You must calculate the order before submitting.")
+			return
+		elif self.ui.lineEdit_Email.text() == "":
+			QMessageBox.warning(self, "No Email", "You must select a customer before submitting the order.")
+			return
 		else:
 			QMessageBox.information(self, "DroneDogs", "Thank you for ordering your meal from DroneDogs!")
 			self.statusBar().showMessage("Your order has been submitted!")
+
+
 
 
 if __name__ == "__main__":

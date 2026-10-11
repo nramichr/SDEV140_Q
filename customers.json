@@ -1,0 +1,17 @@
+[
+	{
+		"first_name": "Fred",
+		"last_name": "Garvin",
+		"email": "fgarvin@thiscompanysnl.com"
+	},
+	{
+		"first_name": "Fran",
+		"last_name": "Pepper",
+		"email": "fpepper@notthesoftdrink.org"
+	},
+	{
+		"first_name": "Will",
+		"last_name": "Robinson",
+		"email": "wrobinson@lostinspacetown.gov"
+	}
+]
