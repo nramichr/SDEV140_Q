@@ -31,6 +31,7 @@ c) there is something in the customer email text box.
 If any of these are not filled in, the program displays an appropriate error message. If they are all
 OK, a message box is displayed thanking the user for placing the order.
 
+Christian Ramirez-Flores
 """
 import json
 import sys
