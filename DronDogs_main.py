@@ -1,37 +1,19 @@
 """
-Part 3 DroneDogs Final Project
-
-We love the new ordering system and the operation of the Order Input form, but would now like to add a
-Customer Information form to the system. The Customer Information form will display existing customers
-(first name, last name, and email address) and allow the user to add new customers. Users can select a
-new or existing customer, and the first name, last name and email address of the selected customer will be
-automatically transferred back to the Order Input form before the order is submitted.
-
-In specific, we are requesting that you (see figures below for visual details):
-
-1. Add a Get Customer Info button to the Order Input form. Clicking that button should open the new
-Customer Information form.
-
-2. Add the fields from the Customer Information form to the Order Input form, so that the information can
-be transferred there after a customer is selected from the Customer Information form.
-
-3. Add a Clear Form button to the Order Input form, which will clear all the text boxes when the user is
-ready to add a new order.
-
-4. Add a check box to the Order Input form, allowing DroneDogs to use location services to determine
-where the drone will deliver the order.
-
-5. Modify the code for the Submit Order button. When the user clicks this button, the program will check to
-see if:
-
-a) the permission check box is checked,
-b) there is something in the total cost text box, and
-c) there is something in the customer email text box.
-
-If any of these are not filled in, the program displays an appropriate error message. If they are all
-OK, a message box is displayed thanking the user for placing the order.
-
+DroneDogs Final Project (Part 4)
 Christian Ramirez-Flores
+
+This program is the DroneDogs ordering system. It lets the user pick how many
+beef, pork, and turkey hot dogs they want, calculates the subtotal, sales tax,
+and total cost, and submits the order for drone delivery.
+
+The main Order Input form connects to a Customer Information form where the
+user can view saved customers, add new ones, and pick a customer for the order.
+The selected customer's first name, last name, and email are sent back to the
+Order Input form. Customers are saved in a customers.json file so they stay
+saved after the program closes.
+
+Before an order is submitted, the program checks that location permission is
+given, the order has been calculated, and a customer email is filled in.
 """
 import json
 import sys
@@ -61,7 +43,9 @@ try:
 except FileNotFoundError:
 	print("customers.json file not found. Starting with an empty customer list.")
 class Mydialog2(QDialog):
+	"""Customer Information form. Shows saved customers and lets the user add or select one."""
 	def __init__(self):
+		"""Sets up the customer form, links the buttons to their functions, and loads the customer list."""
 		super().__init__()
 		self.ui = Ui_Dialog()
 		self.ui.setupUi(self)
@@ -79,6 +63,7 @@ class Mydialog2(QDialog):
 	
 	# Adds the customer typed into the text boxes to the list of customers and saves it to the JSON file
 	def add_customer(self):
+		"""Takes the name and email typed in, adds them to the customer list, saves it to customers.json, and refreshes the list."""
 		global customer_list
 		new_customer = {
 			"first_name": self.first_name.text(),
@@ -91,6 +76,7 @@ class Mydialog2(QDialog):
 		self.load_customer_list()
 
 	def on_select_customer_button_clicked(self):
+		"""Finds the customer the user clicked on, stores their info in the global variables, and closes the form."""
 		selected_items = self.customer_list.selectedItems()
 		if not selected_items:
 			return
@@ -106,16 +92,20 @@ class Mydialog2(QDialog):
 				break
 
 	def load_customer_list(self):
+		"""Clears the list box and fills it with every customer's name and email."""
 		self.customer_list.clear()
 		for customer in customer_list:
 			self.customer_list.addItem(f"{customer['first_name']} {customer['last_name']}  ({customer['email']})")
 	
 	def give_permission(self, granted: bool):
+		"""Shows a permission message in the status bar. Not used by the dialog, since only the main window has a status bar."""
 		message = "Permission granted." if granted else "Permission not granted."
 		self.statusBar().showMessage(message)
 
 class MyMainWindow(QMainWindow):
+	"""Main Order Input form where the user builds, calculates, and submits an order."""
 	def __init__(self):
+		"""Sets up the order form, connects all the buttons and the check box, and makes the customer fields read-only."""
 		super().__init__()
 		self.ui = DroneDogs_ui.Ui_DroneDogs()
 		self.ui.setupUi(self)
@@ -139,10 +129,12 @@ class MyMainWindow(QMainWindow):
 
 	# Shows in the status bar whether location permission was given
 	def give_permission(self, granted: bool):
+		"""Shows in the status bar whether location permission was checked or unchecked."""
 		message = "Permission granted." if granted else "Permission not granted."
 		self.statusBar().showMessage(message)
 
 	def on_clear_form_button_clicked(self):
+		"""Resets the spin boxes to 0, clears all text boxes, and unchecks the permission box for a new order."""
 		self.ui.Spin_Box__BeefDogs.setValue(0)
 		self.ui.Spin_Box__PorkDogs.setValue(0)
 		self.ui.Spin_Box__TurkeyDogs.setValue(0)
@@ -155,6 +147,7 @@ class MyMainWindow(QMainWindow):
 		self.ui.checkBox_permission.setChecked(False)
 
 	def on_customer_dialog_button_clicked(self):
+		"""Opens the Customer Information form and fills in the customer fields if a customer was selected."""
 		dialog = Mydialog2()
 		re_val: int = dialog.exec()
 		if re_val == QDialog.DialogCode.Accepted:
@@ -164,6 +157,7 @@ class MyMainWindow(QMainWindow):
 
 	# Gets the number of hot dogs from the spin boxes and works out the order
 	def calculate_order(self):
+		"""Adds up the hot dogs, works out subtotal, tax, and total, and shows them as money. Warns the user if no hot dogs were picked."""
 		num_beef_dogs: int = self.ui.Spin_Box__BeefDogs.value()
 		num_pork_dogs: int = self.ui.Spin_Box__PorkDogs.value()
 		num_turkey_dogs: int = self.ui.Spin_Box__TurkeyDogs.value()
@@ -189,6 +183,7 @@ class MyMainWindow(QMainWindow):
 
 	# checks if the permission check box is checked, if there is something in the total cost text box, and if there is something in the customer email text box. If any of these are not filled in, the program displays an appropriate error message. If they are all OK, a message box is displayed thanking the user for placing the order.
 	def submit_order(self):
+		"""Checks for location permission, a calculated total, and a customer email. Shows an error if any are missing, or a thank you message if everything is good."""
 		if not self.ui.checkBox_permission.isChecked():
 			QMessageBox.warning(self, "No Permission", "You must give permission for location services before submitting the order.")
 			return
