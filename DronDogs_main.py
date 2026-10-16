@@ -1,6 +1,5 @@
 """
 DroneDogs Final Project (Part 4)
-Christian Ramirez-Flores
 
 This program is the DroneDogs ordering system. It lets the user pick how many
 beef, pork, and turkey hot dogs they want, calculates the subtotal, sales tax,
@@ -14,6 +13,8 @@ saved after the program closes.
 
 Before an order is submitted, the program checks that location permission is
 given, the order has been calculated, and a customer email is filled in.
+
+Christian Ramirez-Flores
 """
 import json
 import sys
